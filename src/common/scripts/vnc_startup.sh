@@ -34,6 +34,9 @@ if [[ $1 =~ -h|--help ]]; then
     exit 0
 fi
 
+# Add devtoolset to bashrc
+# echo "source /opt/rh/devtoolset-4/enable" >> $HOME/.bashrc
+
 # should also source $STARTUPDIR/generate_container_user
 source $HOME/.bashrc
 
