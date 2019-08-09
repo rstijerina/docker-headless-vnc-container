@@ -1,21 +1,6 @@
 # This Dockerfile is used to build an headless vnc image based on Centos
 
-FROM centos:7 as centos7-systemd
-
-ENV container docker
-RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
-    systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-    rm -f /lib/systemd/system/multi-user.target.wants/*;\
-    rm -f /etc/systemd/system/*.wants/*;\
-    rm -f /lib/systemd/system/local-fs.target.wants/*; \
-    rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-    rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-    rm -f /lib/systemd/system/basic.target.wants/*;\
-    rm -f /lib/systemd/system/anaconda.target.wants/*;
-VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/usr/sbin/init"]
-
-FROM centos7-systemd
+FROM centos:7
 
 LABEL maintainer="Sal Tijerina <stijerina@tacc.utexas.edu>"
 
@@ -82,10 +67,13 @@ RUN $INST_SCRIPTS/set_user_permission.sh $STARTUPDIR $HOME
 
 # RUN yum install -y devtoolset-4
 
-RUN yum update && yum install -y \
-    nginx
+RUN yum install -y wget openssl sed &&\
+    yum -y autoremove &&\
+    yum clean all &&\
+    wget http://nginx.org/packages/centos/7/x86_64/RPMS/nginx-1.14.0-1.el7_4.ngx.x86_64.rpm &&\
+    rpm -iv nginx-1.14.0-1.el7_4.ngx.x86_64.rpm
 
-COPY src/common/etc/ /
+COPY src/common/etc/nginx/ /etc/nginx/
 
 # USER 1000
 
