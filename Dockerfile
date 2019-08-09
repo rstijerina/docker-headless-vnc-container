@@ -70,7 +70,7 @@ RUN $INST_SCRIPTS/set_user_permission.sh $STARTUPDIR $HOME
 RUN yum update && yum install -y \
     nginx
 
-COPY common/etc/ /
+COPY src/common/etc/ /
 
 USER 1000
 
