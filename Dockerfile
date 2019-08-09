@@ -72,7 +72,9 @@ RUN yum update && yum install -y \
 
 COPY src/common/etc/ /
 
-USER 1000
+# USER 1000
+
+WORKDIR /root
 
 ENTRYPOINT ["/dockerstartup/vnc_startup.sh"]
 CMD ["--wait"]
