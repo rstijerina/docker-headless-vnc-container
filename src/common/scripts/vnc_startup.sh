@@ -129,5 +129,6 @@ else
     echo "Executing command: '$@'"
     exec "$@"
 fi
-
+systemctl enable nginx
+systemctrl start nxing
 nginx -c /etc/nginx/nginx.conf -g 'daemon off;'

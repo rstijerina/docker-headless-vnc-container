@@ -1,6 +1,6 @@
 # This Dockerfile is used to build an headless vnc image based on Centos
 
-FROM centos:7
+FROM centos:systemd
 
 LABEL maintainer="Sal Tijerina <stijerina@tacc.utexas.edu>"
 
