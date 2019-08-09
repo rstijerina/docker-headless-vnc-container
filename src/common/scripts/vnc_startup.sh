@@ -85,10 +85,16 @@ echo "$VNC_PW" | vncpasswd -f >> $PASSWD_PATH
 chmod 600 $PASSWD_PATH
 
 
+# KEY="/etc/pki/tls/private/designsafe-exec-01.tacc.utexas.edu.key"
+# CERT="/etc/pki/tls/certs/designsafe-exec-01.tacc.utexas.edu.cer"
+
 ## start vncserver and noVNC webclient
 echo -e "\n------------------ start noVNC  ----------------------------"
-if [[ $DEBUG == true ]]; then echo "$NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT"; fi
-$NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT &> $STARTUPDIR/no_vnc_startup.log &
+if [[ $DEBUG == true ]]; then echo "$NO_VNC_HOME/utils/launch.sh"; fi
+# if [[ $DEBUG == true ]]; then echo "$NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT"; fi
+# $NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT &> $STARTUPDIR/no_vnc_startup.log &
+# $NO_VNC_HOME/utils/launch.sh --cert=$CERT --key=$KEY &> $STARTUPDIR/no_vnc_startup.log &
+$NO_VNC_HOME/utils/launch.sh &> $STARTUPDIR/no_vnc_startup.log &
 PID_SUB=$!
 
 echo -e "\n------------------ start VNC server ------------------------"
@@ -123,3 +129,5 @@ else
     echo "Executing command: '$@'"
     exec "$@"
 fi
+
+nginx -c /etc/nginx/nginx.conf -g 'daemon off;'

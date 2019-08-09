@@ -1,0 +1,41 @@
+upstream vnc_proxy {
+    server 127.0.0.1:6080;
+}
+
+server {
+    # listen 443 ssl default_server;
+    # server_name example.com;
+
+    listen 80 default_server;
+    # listen [::]:80 default_server ipv6only=on;
+
+    listen 6080 ssl default_server;
+    listen [::]:6080 ssl default_server ipv6only=on;
+    ssl_certificate         /etc/pki/tls/certs/designsafe-exec-01.tacc.utexas.edu.cer;
+    ssl_certificate_key     /etc/pki/tls/private/designsafe-exec-01.tacc.utexas.edu.key;
+
+    location /websockify {
+          proxy_http_version 1.1;
+        #   proxy_pass http://vnc_proxy/;
+          proxy_pass http://127.0.0.1:6081/;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+
+        #   proxy_connect_timeout   7d;
+        #   proxy_send_timeout      7d;
+        #   proxy_read_timeout      7d;
+
+          # VNC connection timeout
+          proxy_read_timeout 61s;
+
+          # Disable cache
+          proxy_buffering off;
+    }
+
+    location /vncws {
+            index vnc.html;
+            alias /headless/noVNC;
+            try_files $uri $uri/ /vnc.html;
+    }
+
+}

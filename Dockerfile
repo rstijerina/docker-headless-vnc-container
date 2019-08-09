@@ -6,19 +6,20 @@ LABEL maintainer="Sal Tijerina <stijerina@tacc.utexas.edu>"
 
 # ENV REFRESHED_AT 2018-10-29
 
-LABEL io.k8s.description="Headless VNC Container with Xfce window manager, firefox and chromium" \
-    io.k8s.display-name="Headless VNC Container based on Centos" \
-    io.openshift.expose-services="6901:http,5901:xvnc" \
-    io.openshift.tags="vnc, centos, xfce" \
-    io.openshift.non-scalable=true
+# LABEL io.k8s.description="Headless VNC Container with Xfce window manager, firefox and chromium" \
+#     io.k8s.display-name="Headless VNC Container based on Centos" \
+#     io.openshift.expose-services="6901:http,5901:xvnc" \
+#     io.openshift.tags="vnc, centos, xfce" \
+#     io.openshift.non-scalable=true
 
 ## Connection ports for controlling the UI:
 # VNC port:5901
 # noVNC webport, connect via http://IP:6901/?password=vncpassword
 ENV DISPLAY=:1 \
     VNC_PORT=5901 \
-    NO_VNC_PORT=6901
-EXPOSE $VNC_PORT $NO_VNC_PORT
+    NO_VNC_PORT=6080
+# EXPOSE $VNC_PORT $NO_VNC_PORT
+EXPOSE $NO_VNC_PORT
 
 ### Envrionment config
 ENV HOME=/headless \
@@ -65,6 +66,11 @@ RUN $INST_SCRIPTS/set_user_permission.sh $STARTUPDIR $HOME
 # RUN yum-config-manager --enable rhel-server-rhscl=7-rpms
 
 # RUN yum install -y devtoolset-4
+
+RUN yum update && yum install -y \
+    nginx
+
+COPY common/etc/ /
 
 USER 1000
 
