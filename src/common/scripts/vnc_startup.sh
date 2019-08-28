@@ -82,6 +82,7 @@ if [[ $VNC_VIEW_ONLY == "true" ]]; then
     echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20) | vncpasswd -f > $PASSWD_PATH
 fi
 echo "$VNC_PW" | vncpasswd -f >> $PASSWD_PATH
+echo "my VNC password   $VNC_PW" 
 chmod 600 $PASSWD_PATH
 
 
@@ -93,8 +94,13 @@ echo -e "\n------------------ start noVNC  ----------------------------"
 if [[ $DEBUG == true ]]; then echo "$NO_VNC_HOME/utils/launch.sh"; fi
 # if [[ $DEBUG == true ]]; then echo "$NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT"; fi
 # $NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT &> $STARTUPDIR/no_vnc_startup.log &
-# $NO_VNC_HOME/utils/launch.sh --cert=$CERT --key=$KEY &> $STARTUPDIR/no_vnc_startup.log &
-$NO_VNC_HOME/utils/launch.sh &> $STARTUPDIR/no_vnc_startup.log &
+ #$NO_VNC_HOME/utils/launch.sh  --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT --cert=$CERT --key=$KEY &> $STARTUPDIR/no_vnc_startup.log &
+ $NO_VNC_HOME/utils/launch.sh  --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT --cert $CERT&
+#$NO_VNC_HOME/utils/launch.sh &> $STARTUPDIR/no_vnc_startup.log &
+
+echo -e "\n------------------ log-> $STARTUPDIR/no_vnc_startup.log  ----------------------------"
+#$NO_VNC_HOME/utils/launch.sh --vnc localhost:$VNC_PORT --listen $NO_VNC_PORT &> $STARTUPDIR/no_vnc_startup.log &
+
 PID_SUB=$!
 
 echo -e "\n------------------ start VNC server ------------------------"
@@ -114,6 +120,11 @@ echo -e "\n\n------------------ VNC environment started ------------------"
 echo -e "\nVNCSERVER started on DISPLAY= $DISPLAY \n\t=> connect via VNC viewer with $VNC_IP:$VNC_PORT"
 echo -e "\nnoVNC HTML client started:\n\t=> connect via http://$VNC_IP:$NO_VNC_PORT/?password=...\n"
 
+echo -e "\n\n------------------ Testing nginx ------------------"
+nginx -t -c /etc/nginx/nginx.conf 
+echo -e "\n\n------------------ Running nginx ------------------"
+nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
+#nginx -c /etc/nginx/nginx.conf  @SAL, we can't remember if we were using this line or the line before
 
 if [[ $DEBUG == true ]] || [[ $1 =~ -t|--tail-log ]]; then
     echo -e "\n------------------ $HOME/.vnc/*$DISPLAY.log ------------------"
@@ -130,4 +141,3 @@ else
     exec "$@"
 fi
 
-nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
